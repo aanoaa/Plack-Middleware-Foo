@@ -25,13 +25,19 @@ sub call {
         my $res = shift;
         my $headers = Plack::Util::headers($res->[1]);
         my $content_type = $headers->get('Content-Type');
+        my $big_chunk = '';
         if ($content_type =~ m/json/i) {
             return sub {
                 my $chunk = shift;
-                return unless defined $chunk;
-                my $data = from_json($chunk);
-                my $res_content .= sprintf("[Response]\n%s\n", to_json($data, { pretty => 1 }));
-                write_file('log/res.log', { append => 1 }, $res_content);
+                unless (defined $chunk) {
+                    my $data = from_json($big_chunk);
+                    my $res_content .= sprintf("[Response]\n%s\n", to_json($data, { pretty => 1 }));
+                    write_file('log/res.log', { append => 1 }, $res_content);
+                    return;
+                } else {
+                    $big_chunk .= $chunk;
+                }
+
                 return $chunk;
             }
         }
