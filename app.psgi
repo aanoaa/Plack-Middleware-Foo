@@ -6,5 +6,5 @@ use Plack::App::Proxy;
 
 builder {
     enable "Plack::Middleware::Foo";
-    mount "/" => Plack::App::Proxy->new(remote => "http://ream.hshong.net:80")->to_app;
+    mount "/" => Plack::App::Proxy->new(remote => "http://api.zangso.com:80")->to_app;
 };
